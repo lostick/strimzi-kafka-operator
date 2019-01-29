@@ -97,11 +97,11 @@ public class K8sImpl implements K8s {
             try {
                 // first look at topics specs, then look at their names
                 List<KafkaTopic> list = operation().inNamespace(namespace).withLabels(resourcePredicate.labels()).list().getItems();
-                LOGGER.debug("looking for k8s topic which contain " + topicName + " as spec.topicName.");
+                LOGGER.debug("looking for k8s topic with spec.topicName==" + topicName);
                 for (int i = 0; i < list.size(); i++) {
                     LOGGER.debug("Comparing : " + list.get(i).getSpec().getTopicName() + " - " + topicName);
                     if (list.get(i).getSpec().getTopicName() != null && list.get(i).getSpec().getTopicName().equals(topicName)) {
-                        LOGGER.debug("Found k8s topic " + topicName + " with spec.topicName " + list.get(i).getSpec().getTopicName());
+                        LOGGER.debug("Found k8s topic " + list.get(i).getMetadata().getName() + " with spec.topicName==" + list.get(i).getSpec().getTopicName());
                         future.complete(list.get(i));
                         return;
                     }
