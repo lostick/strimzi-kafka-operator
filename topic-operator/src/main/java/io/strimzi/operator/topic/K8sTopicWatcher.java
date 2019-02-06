@@ -59,11 +59,9 @@ class K8sTopicWatcher implements Watcher<KafkaTopic> {
             };
             switch (action) {
                 case ADDED:
-                    LOGGER.info("creating topic with labels " + kafkaTopic.getMetadata().getLabels());
                     topicOperator.onResourceAdded(kafkaTopic, resultHandler);
                     break;
                 case MODIFIED:
-                    LOGGER.info("modifying topic with labels " + metadata.getLabels());
                     topicOperator.onResourceModified(kafkaTopic, resultHandler);
                     break;
                 case DELETED:

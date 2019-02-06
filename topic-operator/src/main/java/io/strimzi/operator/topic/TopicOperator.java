@@ -795,7 +795,6 @@ public class TopicOperator {
             final Topic k8sTopic;
             try {
                 k8sTopic = TopicSerialization.fromTopicResource(modifiedTopic);
-                LOGGER.info("onResourceModified modified " + modifiedTopic.getMetadata().getLabels() + " k8s " + k8sTopic.getMetadata().getLabels());
             } catch (InvalidTopicException e) {
                 resultHandler.handle(Future.failedFuture(e));
                 return;
@@ -826,7 +825,6 @@ public class TopicOperator {
                 if (privateTopic == null && isModify) {
                     enqueue(new Event(topicResource, "Kafka topics cannot be renamed, but KafkaTopic's spec.topicName has changed.", EventType.WARNING, handler));
                 } else {
-                    LOGGER.info("topic added, reconciling " + topicName.toString() + " " + topicResource.getMetadata().getLabels());
                     reconcile(topicResource, k8sTopic, kafkaTopic, privateTopic, handler);
                 }
             } else {

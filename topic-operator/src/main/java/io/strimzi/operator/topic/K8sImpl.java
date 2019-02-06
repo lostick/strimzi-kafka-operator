@@ -97,23 +97,23 @@ public class K8sImpl implements K8s {
         vertx.executeBlocking(future -> {
             try {
                 List<KafkaTopic> list = operation().inNamespace(namespace).withLabels(resourcePredicate.labels()).list().getItems();
-                LOGGER.debug("Looking for k8s topic with " + Labels.STRIMZI_TOPIC_LABEL + "==" + topicName);
+                LOGGER.debug("Searching k8s topic with " + Labels.STRIMZI_TOPIC_LABEL + "==" + topicName);
                 for (int i = 0; i < list.size(); i++) {
                     // this may be reduced after we will be sure there is always a label set (putting it at the place every reconc)
                     String kafkaTopicNameHash = list.get(i).getMetadata().getLabels().get(Labels.STRIMZI_TOPIC_LABEL);
                     if (kafkaTopicNameHash == null) {
-                        LOGGER.debug("Label " + Labels.STRIMZI_TOPIC_LABEL + " not set. Looking for spec.topicName");
+                        LOGGER.debug("Label " + Labels.STRIMZI_TOPIC_LABEL + " not set. Searching by spec.topicName");
                         // we are reconciling fresh topic which does not have set label yet
                         kafkaTopicNameHash = Integer.toString(list.get(i).getSpec().getTopicName().hashCode());
                     }
                     if (kafkaTopicNameHash == null) {
-                        LOGGER.debug("Label " + Labels.STRIMZI_TOPIC_LABEL + " and spec.topicName not set. Looking for resource name");
+                        LOGGER.debug("Label " + Labels.STRIMZI_TOPIC_LABEL + " nor spec.topicName set. Searching by resource name");
                         // use resource name whether the topicName is not set
                         kafkaTopicNameHash = Integer.toString(list.get(i).getMetadata().getName().hashCode());
                     }
                     LOGGER.debug("Comparing: " + topicName.hashCode() + " - " + kafkaTopicNameHash + " (" + list.get(i).getMetadata().getName() + ")");
                     if (Integer.toString(topicName.hashCode()).equals(kafkaTopicNameHash)) {
-                        LOGGER.debug("Found k8s topic " + list.get(i).getMetadata().getName() + " with " + Labels.STRIMZI_TOPIC_LABEL + "==" + kafkaTopicNameHash);
+                        LOGGER.debug("Found k8s topic " + list.get(i).getMetadata().getName() + " with {metadata.name hash | spec.topicName hash | " + Labels.STRIMZI_TOPIC_LABEL + "} equal to " + kafkaTopicNameHash);
                         future.complete(list.get(i));
                         return;
                     }
