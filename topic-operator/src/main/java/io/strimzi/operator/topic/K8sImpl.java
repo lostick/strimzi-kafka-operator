@@ -96,7 +96,7 @@ public class K8sImpl implements K8s {
     public void getFromName(String topicName, Handler<AsyncResult<KafkaTopic>> handler) {
         vertx.executeBlocking(future -> {
             try {
-                List<KafkaTopic> list = operation().inNamespace(namespace).withLabels(resourcePredicate.labels()).list().getItems();
+                List<KafkaTopic> list = operation().inNamespace(namespace).list().getItems();
                 LOGGER.debug("Searching k8s topic with " + Labels.STRIMZI_TOPIC_LABEL + "==" + topicName);
                 for (int i = 0; i < list.size(); i++) {
                     // this may be reduced after we will be sure there is always a label set (putting it at the place every reconc)
@@ -118,7 +118,8 @@ public class K8sImpl implements K8s {
                         return;
                     }
                 }
-                future.fail("K8s topic with " + Labels.STRIMZI_TOPIC_LABEL + "==" + topicName + " not found");
+                LOGGER.debug("K8s topic with " + Labels.STRIMZI_TOPIC_LABEL + "==" + topicName + " not found");
+                future.complete(null);
             } catch (Exception e) {
                 future.fail(e);
             }
